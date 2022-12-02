@@ -1,3 +1,5 @@
+// https://cs50.harvard.edu/x/2022/psets/1/credit/
+
 #include <cs50.h>
 #include <stdio.h>
 #include <math.h>
@@ -30,37 +32,37 @@ int findLength(long int num)
 // Finds checksum and if valid
 bool checkSum(long int cardNum)
 {
-    int length = findLength(cardNum);
     int sum = 0;
-    // Finds sum of every other digit starting with second-to-last digit
-    for (int i = 2; i < length + 1; i += 2)
+    int i = 1;
+    
+    // Loop through whole number
+    while (cardNum > 0)
     {
-        int number = 2 * ((cardNum % (long)pow(10, i)) / (long)pow(10, i - 1));
-        if (number >= 10)
+        // Check if every second from last
+        if (i%2 == 0)
         {
-            sum = sum + (number / 10) + (number % 10);
+            int temp = 2 * (cardNum % 10);
+            if (temp >= 10)
+            {
+                sum += 1;
+            }
+            sum += temp % 10;
+            cardNum /= 10;
         }
         else
         {
-            sum = sum + number;
+            sum += (cardNum % 10);
+            cardNum /= 10;
         }
-    }
-    // Every left number added to sum
-    for (int i = 1; i < length + 1; i += 2)
-    {
-        int number = ((cardNum % (long)pow(10, i)) / (long)pow(10, i - 1));
-        sum = sum + number;
+        i++;
     }
 
-    // If checksum valid returns true/else false
+    // If checksum valid returns true; else false
     if (sum % 10 == 0)
     {
         return true;
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 // Finds which provider or if none
