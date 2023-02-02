@@ -2,9 +2,10 @@
 #define MAXV2(y) #y
 #define MAXV(x) MAXV2(x)
 #define SPACING 47
+#define INPUT_SIZE 30
 
 void load_file(FILE *file, struct Person **list);
-void ask_input(struct Person **list);
+void ask_task(struct Person **list);
 void do_task(struct Person **list, int task);
 
 int main(void)
@@ -18,12 +19,13 @@ int main(void)
     if (file == NULL){
         printf("Unable to open file\n");
         exit(1);
-
     }
     load_file(file, &list);
-    printf("Initial List: ");
+    printf("Initial List: \n");
     llist_print(list);
-    ask_input(list);
+
+    ask_task(&list);
+
     llist_remove_all(list);
     fclose(file);
     return 0;
@@ -46,7 +48,7 @@ void load_file(FILE *file, struct Person **list)
 void print_possible()
 {
     printf("%" MAXV(SPACING) "s\n", "Select task:");
-    printf("%" MAXV(SPACING) "s\n", "Finish program - 1");
+    printf("%" MAXV(SPACING) "s\n", "Exit program - 1");
     printf("%" MAXV(SPACING) "s\n", "Print address book - 2");
     printf("%" MAXV(SPACING) "s\n", "Add new address to the end of list - 3");
     printf("%" MAXV(SPACING) "s\n", "Add new address to specified loation - 4");
@@ -55,6 +57,7 @@ void print_possible()
     printf("%" MAXV(SPACING) "s\n", "Find address by position - 7");
     printf("%" MAXV(SPACING) "s\n", "Find address by name, surname, email, phone - 8");
 }
+
 void ask_task(struct Person **list)
 {
     print_possible();
@@ -64,41 +67,64 @@ void ask_task(struct Person **list)
         printf("Wrong input!\n");
         ask_task(list);
         return;
-    } else if (task > 8 && task < 1){
+    } else if (task > 8 || task < 1){
         printf("Task does not exist\n");
         ask_task(list);
         return;
-    } else {
+    } else if (task == 1){
+        printf("Exiting program\n");
+        return;
+    }
+    else {
         do_task(list, task);
-        exit(1);
+        ask_task(list);
     }
 }
 
 char *ask_address_input()
 {
-    return NULL;
+    char *line = malloc(sizeof(char) * 128);
+    char name[30];
+    char surname[30];
+    char email[30];
+    char phone[30];
+    printf("Enter name:\n");
+    
+    // add goto if sscanf() returns less than 1 to repeat asking
+    fgets(name, 30, stdin);
+    sscanf();
+    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", name);
+    printf("Enter surname:\n");
+    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", surname);
+    printf("Enter email:\n");
+    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", email);
+    printf("Enter phone:\n");
+    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", phone);
+    snprintf(line, 128, "%s,%s,%s,%s", name, surname, email, phone);
+    return line;
 }
 void do_task(struct Person **list, int task)
 {
-    char input[128];
+    char *input = NULL;
     struct Person *new = NULL;
     switch (task)
     {
-        case 1:
-            return;
-            break;
         case 2:
-            llist_print(list);
-            break;
+                printf("Current list:\n");
+                llist_print(*list);
+                break;
         case 3:
-            input = ask_address_input();
-            new = create_address_node(input);
-            llist_add_end(*list, new);
-            break;
+                input = ask_address_input();
+                printf("%s", input);
+                //new = create_address_node(input);
+                //llist_add_end(list, new);
+                free(input);
+                break;
+        /*
         case 4:
             input = ask_address_input();
             new = create_address_node(input);
-            llist_add_at(*list, new, task);
+            llist_add_at(list, new, task);
             break;
         case 5:
         
@@ -112,5 +138,6 @@ void do_task(struct Person **list, int task)
         case 8:
         
             break;
+        */
     }
 }
