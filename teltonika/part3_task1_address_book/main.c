@@ -129,6 +129,7 @@ char *ask_address_input()
     printf("Enter phone:\n");
     phone = ask_input();
     snprintf(line, 128, "%s,%s,%s,%s", name, surname, email, phone);
+
     free(name);
     free(surname);
     free(email);
@@ -151,7 +152,6 @@ void do_task(struct Person **list, int task)
                 printf("New address: %s\n", input);
                 new = create_address_node(input);
                 llist_add_end(list, new);
-                llist_print(*list);
                 free(input);
                 break;
         case 4:
@@ -166,7 +166,9 @@ void do_task(struct Person **list, int task)
                 free(input);
                 break;
         case 5:
-        
+                printf("Input address position: ");
+                pos = ask_num();
+                llist_remove_at(list, pos);
                 break;
         case 6:
                 printf("Removed all!\n");

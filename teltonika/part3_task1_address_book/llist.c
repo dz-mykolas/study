@@ -34,10 +34,10 @@ struct Person *create_node(char *name, char *surname, char *email, char *phone)
 
 int get_size(struct Person *list)
 {   
-    struct Person *tmp = list;
+    struct Person *temp = list;
     int i = 0;
-    while (tmp != NULL) {
-        tmp = tmp->next;
+    while (temp != NULL) {
+        temp = temp->next;
         i++;
     }
     return i;
@@ -45,33 +45,33 @@ int get_size(struct Person *list)
 
 void llist_print(struct Person *list)
 {
-    struct Person *tmp = list;
-    while (tmp != NULL) {
-        printf("%s %s %s %s\n", tmp->name, tmp->surname, tmp->email, tmp->phone);
-        tmp = tmp->next;
+    struct Person *temp = list;
+    while (temp != NULL) {
+        printf("%s %s %s %s\n", temp->name, temp->surname, temp->email, temp->phone);
+        temp = temp->next;
     }
 }
 
 void llist_add_end(struct Person **list, struct Person *p)
 {
     // check head
-    struct Person *tmp = *list;
-    if (tmp == NULL) {
+    struct Person *temp = *list;
+    if (temp == NULL) {
         *list = p;
         return;
     }
 
-    while (tmp->next != NULL) {
-        tmp = tmp->next;
+    while (temp->next != NULL) {
+        temp = temp->next;
     }
-    tmp->next = p;
+    temp->next = p;
 }
 
 int llist_add_at(struct Person **list, struct Person *p, int pos)
 {
-    struct Person *tmp = *list;
+    struct Person *temp = *list;
     if (pos == 0) {
-        if (tmp == NULL) {
+        if (temp == NULL) {
             *list = p;
         } else {
             p->next = *list;
@@ -80,15 +80,15 @@ int llist_add_at(struct Person **list, struct Person *p, int pos)
         return 0;
     }
 
-    if (tmp == NULL) {
+    if (temp == NULL) {
         printf("List has 0 elements, can not assign to position %d", pos);
         return 1;
     } else {
         struct Person *previous;
         int i = 0;
-        while (tmp != NULL && i < pos) {
-            previous = tmp;
-            tmp = tmp->next;
+        while (temp != NULL && i < pos) {
+            previous = temp;
+            temp = temp->next;
             i++;
         }
         if (i < pos) {
@@ -96,64 +96,76 @@ int llist_add_at(struct Person **list, struct Person *p, int pos)
             return 1;
         }
         previous->next = p;
-        p->next = tmp;
+        p->next = temp;
         return 0;
     }
 }
 
-int llist_remove_at(struct Person *list, int pos)
+void llist_remove_at(struct Person **list, int pos)
 {
-    struct Person *tmp = list;
+    struct Person *current = *list;
+    if (current == NULL) {
+        printf("List has 0 elements");
+        return;
+    }
+    if (pos == 0) {
+        *list = current->next;
+        free(current);
+        return;
+    }
+
     int i = 0;
-    while (tmp != NULL || i < pos) {
-        tmp = tmp->next;
+    while (current != NULL && i + 1 < pos) {
+        printf("%d\n", i);
+        current = current->next;
         i++;
     }
-    if (i < pos) {
-        printf("List is too small for specified position (Current Size: %d)", i);
-        return 1;
+    if (current == NULL || current->next == NULL) {
+        printf("List is too small for specified position\n");
+        return;
     }
-    free(tmp);
-    return 0;
+    struct Person *temp = current->next->next;
+    free(current->next);
+    current->next = temp;
 }
 
 void llist_remove_all(struct Person **list)
 {
     struct Person *head = *list;
-    struct Person *tmp;
+    struct Person *temp;
     while (head != NULL) {
-        tmp = head;
+        temp = head;
         head = head->next;
-        free(tmp);
+        free(temp);
     }
     *list = NULL;
 }
 
 struct Person *llist_find_at(struct Person *list, int pos)
 {
-    struct Person *tmp = NULL;
+    struct Person *temp = NULL;
     int i = 0;
-    while (tmp != NULL || i < pos) {
-        tmp = tmp->next;
+    while (temp != NULL || i < pos) {
+        temp = temp->next;
         i++;
     }
     if (i < pos) {
         printf("List is too small for specified position (Current Size: %d)", i);
         return NULL;
     }
-    return tmp;
+    return temp;
 }
 
 struct Person *llist_find_by(struct Person *list, char *s)
 {
-    struct Person *tmp = NULL;
+    struct Person *temp = NULL;
     int i = 0;
-    while (tmp != NULL) {
-        tmp = list;
-        if (strcmp(tmp->name, s) || strcmp(tmp->surname, s) || strcmp(tmp->email, s) || strcmp(tmp->phone, s) == 0) {
+    while (temp != NULL) {
+        temp = list;
+        if (strcmp(temp->name, s) || strcmp(temp->surname, s) || strcmp(temp->email, s) || strcmp(temp->phone, s) == 0) {
             break;
         }
         i++;
     }
-    return tmp;
+    return temp;
 }
