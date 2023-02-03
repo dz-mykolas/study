@@ -43,11 +43,16 @@ int get_size(struct Person *list)
     return i;
 }
 
+void person_print(struct Person *p)
+{
+    printf("%s %s %s %s\n", p->name, p->surname, p->email, p->phone);
+}
+
 void llist_print(struct Person *list)
 {
     struct Person *temp = list;
     while (temp != NULL) {
-        printf("%s %s %s %s\n", temp->name, temp->surname, temp->email, temp->phone);
+        person_print(temp);
         temp = temp->next;
     }
 }
@@ -116,7 +121,6 @@ void llist_remove_at(struct Person **list, int pos)
 
     int i = 0;
     while (current != NULL && i + 1 < pos) {
-        printf("%d\n", i);
         current = current->next;
         i++;
     }

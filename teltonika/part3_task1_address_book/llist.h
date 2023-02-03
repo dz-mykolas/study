@@ -12,6 +12,7 @@ struct Person {
 
 struct Person *create_address_node(char *string);
 struct Person *create_node(char *name, char *surname, char *email, char *phone);
+void person_print(struct Person *p);
 void llist_print(struct Person *list);
 void llist_add_end(struct Person **list, struct Person *p);
 int llist_add_at(struct Person **list, struct Person *p, int pos);

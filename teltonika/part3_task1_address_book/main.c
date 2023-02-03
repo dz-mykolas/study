@@ -175,10 +175,10 @@ void do_task(struct Person **list, int task)
                 llist_remove_all(list);
                 break;
         case 7:
-        
+                //person_print();
                 break;
         case 8:
-        
+                //person_print();
                 break;
     }
 }
