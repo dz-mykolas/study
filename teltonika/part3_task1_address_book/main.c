@@ -5,7 +5,8 @@
 #define INPUT_SIZE 30
 
 void load_file(FILE *file, struct Person **list);
-void ask_task(struct Person **list);
+void print_possible();
+int ask_num();
 void do_task(struct Person **list, int task);
 
 int main(void)
@@ -16,7 +17,7 @@ int main(void)
 
     file = fopen(file_path, "r");
 
-    if (file == NULL){
+    if (file == NULL) {
         printf("Unable to open file\n");
         exit(1);
     }
@@ -24,7 +25,16 @@ int main(void)
     printf("Initial List: \n");
     llist_print(list);
 
-    ask_task(&list);
+    int task = 0;
+    while (task != 1) {
+        print_possible();
+        task = ask_num();
+        if (task > 8 || task < 1) {
+            printf("Task does not exist!\n");
+            continue;
+        }
+        do_task(&list, task);
+    }
 
     llist_remove_all(list);
     fclose(file);
@@ -34,12 +44,12 @@ int main(void)
 void load_file(FILE *file, struct Person **list)
 {
     char line[128];
-    while (fgets(line, sizeof(line), file)){
+    while (fgets(line, sizeof(line), file)) {
         if (strcmp(line, "\n") == 0)
             continue;
         
         struct Person *new = create_address_node(line);
-        if (new != NULL){
+        if (new != NULL) {
             llist_add_end(list, new);
         }
     }
@@ -58,133 +68,115 @@ void print_possible()
     printf("%" MAXV(SPACING) "s\n", "Find address by name, surname, email, phone - 8");
 }
 
-void ask_task(struct Person **list)
+void consume_buffer(char *buffer)
 {
-    print_possible();
-    char newl;
+    char *p;
+    if (p = strchr(buffer, '\n')) {
+        *p = '\0';
+    } else {
+        scanf("%*[^\n]");
+        scanf("%*c");
+    }
+}
+int ask_num()
+{
     int task = 0;
     char buffer[3];
     int c;
-    while (1){
-        if (fgets(buffer, 3, stdin) == NULL){
+    while (1) {
+        if (fgets(buffer, 3, stdin) == NULL) {
             printf("Wrong input!\n");
-        } else if (sscanf(buffer, "%d", &task) != 1){
-            printf("Wrong input!\n");
-            // TODO: Understand
-            /*
-            char *p;
-            if(p=strchr(buffer, '\n')){//check exist newline
-                *p = 0;
-            } else {
-                scanf("%*[^\n]");scanf("%*c");//clear upto newline
-            }
-            */ https://stackoverflow.com/a/38768287/15218705
+        } else if (sscanf(buffer, "%d", &task) != 1) {
+            printf("Wrong input!\n"); 
+            consume_buffer(buffer);
         } else {
-            do_task(list, task);
-            break;
+            return task;
         }
     }
-        /*
-        if (fscanf(stdin, "%d%c", &task, &newl) != 2 || newl != '\n'){
+    return task;
+}
+
+char *ask_input()
+{
+    char buffer[INPUT_SIZE + 2];
+    char *input = malloc(sizeof(char) * INPUT_SIZE);
+    int c;
+    while (1) {
+        if (fgets(buffer, INPUT_SIZE, stdin) == NULL) {
             printf("Wrong input!\n");
-            goto ask_task;
-        } else if (task > 8 || task < 1){
-            printf("Task does not exist\n");
-            ask_task(list);
-        } else if (task == 1){
-            printf("Exiting program\n");
+        } else {
+            sscanf(buffer, "%" MAXV(INPUT_SIZE) "s \n", input);
+            consume_buffer(buffer);
+            return input;
         }
-        else {
-            do_task(list, task);
-        }
-        */
+    }
 }
 
 char *ask_address_input()
 {
     char *line = malloc(sizeof(char) * 128);
-    char buffer[INPUT_SIZE];
-    
     char *name;
     char *surname;
     char *email;
     char *phone;
-    
-    // add goto if sscanf() returns less than 1 to repeat asking
-    ask_name:
+
     printf("Enter name:\n");
-    fgets(buffer, INPUT_SIZE, stdin);
-    //name = strtok(buffer, " \n");
-    //printf("%li\n", sizeof(name));
-    printf("%li\n", sizeof(buffer));
-    snprintf(line, 128, "%s", buffer);
-
-    /*
+    name = ask_input();
     printf("Enter surname:\n");
-    fgets(buffer, INPUT_SIZE, stdin);
-    surname = strtok(buffer, " \n");
-    printf("%li\n", sizeof(surname));
-
-    printf("Enter surname:\n");
-    fgets(buffer, INPUT_SIZE, stdin);
-    email = strtok(buffer, " \n");
-    printf("%li\n", sizeof(email));
-    
-    printf("Enter surname:\n");
-    fgets(buffer, INPUT_SIZE, stdin);
-    phone = strtok(buffer, " \n");
-    printf("%li\n", sizeof(phone));
-    */
-    
-
-    /*
-    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", name);
-    printf("Enter surname:\n");
-    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", surname);
+    surname = ask_input();
     printf("Enter email:\n");
-    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", email);
+    email = ask_input();
     printf("Enter phone:\n");
-    fscanf(stdin, "%" MAXV(INPUT_SIZE) "[^\n]", phone);
-    */
-    
-    //snprintf(line, 128, "%s,%s,%s,%s", buffer, surname, email, phone);
+    phone = ask_input();
+    snprintf(line, 128, "%s,%s,%s,%s", name, surname, email, phone);
+    free(name);
+    free(surname);
+    free(email);
+    free(phone);
     return line;
 }
+
 void do_task(struct Person **list, int task)
 {
     char *input = NULL;
     struct Person *new = NULL;
-    switch (task)
-    {
+    int pos = 0;
+    switch (task) {
         case 2:
                 printf("Current list:\n");
                 llist_print(*list);
                 break;
         case 3:
                 input = ask_address_input();
-                printf("%s\n", input);
-                //new = create_address_node(input);
-                //llist_add_end(list, new);
+                printf("New address: %s\n", input);
+                new = create_address_node(input);
+                llist_add_end(list, new);
+                llist_print(*list);
                 free(input);
                 break;
-        /*
         case 4:
-            input = ask_address_input();
-            new = create_address_node(input);
-            llist_add_at(list, new, task);
-            break;
+                input = ask_address_input();
+                printf("New address: %s\n", input);
+                printf("Input address position: ");
+                pos = ask_num();
+                new = create_address_node(input);
+                if (llist_add_at(list, new, pos) == 1) {
+                    free(new);
+                    break;
+                }
+                break;
         case 5:
         
-            break;
+                break;
         case 6:
-        
-            break;
+                printf("Removed all!\n");
+                llist_remove_all(*list);
+                break;
         case 7:
         
-            break;
+                break;
         case 8:
         
-            break;
-        */
+                break;
     }
 }
