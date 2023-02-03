@@ -36,7 +36,7 @@ int main(void)
         do_task(&list, task);
     }
 
-    llist_remove_all(list);
+    llist_remove_all(&list);
     fclose(file);
     return 0;
 }
@@ -162,15 +162,15 @@ void do_task(struct Person **list, int task)
                 new = create_address_node(input);
                 if (llist_add_at(list, new, pos) == 1) {
                     free(new);
-                    break;
                 }
+                free(input);
                 break;
         case 5:
         
                 break;
         case 6:
                 printf("Removed all!\n");
-                llist_remove_all(*list);
+                llist_remove_all(list);
                 break;
         case 7:
         

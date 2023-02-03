@@ -72,7 +72,7 @@ int llist_add_at(struct Person **list, struct Person *p, int pos)
     struct Person *tmp = *list;
     if (pos == 0) {
         if (tmp == NULL) {
-            tmp = p;
+            *list = p;
         } else {
             p->next = *list;
             *list = p;
@@ -117,15 +117,16 @@ int llist_remove_at(struct Person *list, int pos)
     return 0;
 }
 
-void llist_remove_all(struct Person *list)
+void llist_remove_all(struct Person **list)
 {
-    struct Person *tmp = list;
-    while (list != NULL) {
-        list = list->next;
-        tmp = NULL;
+    struct Person *head = *list;
+    struct Person *tmp;
+    while (head != NULL) {
+        tmp = head;
+        head = head->next;
         free(tmp);
-        tmp = list;
     }
+    *list = NULL;
 }
 
 struct Person *llist_find_at(struct Person *list, int pos)
