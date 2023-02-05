@@ -81,15 +81,17 @@ void consume_buffer(char *buffer)
 int ask_num()
 {
     int task = 0;
-    char buffer[3];
+    const int sz = 5;
+    char buffer[sz];
     int c;
     while (1) {
-        if (fgets(buffer, 3, stdin) == NULL) {
+        if (fgets(buffer, sz, stdin) == NULL) {
             printf("Wrong input!\n");
         } else if (sscanf(buffer, "%d", &task) != 1) {
-            printf("Wrong input!\n"); 
+            printf("Wrong input!\n");
             consume_buffer(buffer);
         } else {
+            consume_buffer(buffer);
             return task;
         }
     }
@@ -175,9 +177,17 @@ void do_task(struct Person **list, int task)
                 llist_remove_all(list);
                 break;
         case 7:
-                //person_print();
+                printf("Input address position: ");
+                pos = ask_num();
+                if (pos < 0)
+                    printf("Wrong input\n");
+                else if ((new = llist_find_at(*list, pos)) != NULL)
+                    person_print(new);
                 break;
         case 8:
+                printf("Input exact name/surname/email/phone: ");
+                //input = ask_num();
+                new = llist_find_by(*list, input);
                 //person_print();
                 break;
     }

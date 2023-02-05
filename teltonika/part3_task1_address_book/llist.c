@@ -51,9 +51,12 @@ void person_print(struct Person *p)
 void llist_print(struct Person *list)
 {
     struct Person *temp = list;
+    int i = 0;
     while (temp != NULL) {
+        printf("%d: ", i);
         person_print(temp);
         temp = temp->next;
+        i++;
     }
 }
 
@@ -86,7 +89,7 @@ int llist_add_at(struct Person **list, struct Person *p, int pos)
     }
 
     if (temp == NULL) {
-        printf("List has 0 elements, can not assign to position %d", pos);
+        printf("List has 0 elements, can not assign to position %d\n", pos);
         return 1;
     } else {
         struct Person *previous;
@@ -97,7 +100,7 @@ int llist_add_at(struct Person **list, struct Person *p, int pos)
             i++;
         }
         if (i < pos) {
-            printf("List is too small for specified position (Current Size: %d)", i);
+            printf("List is too small for specified position (Current Size: %d)\n", i);
             return 1;
         }
         previous->next = p;
@@ -147,14 +150,14 @@ void llist_remove_all(struct Person **list)
 
 struct Person *llist_find_at(struct Person *list, int pos)
 {
-    struct Person *temp = NULL;
+    struct Person *temp = list;
     int i = 0;
-    while (temp != NULL || i < pos) {
+    while (temp != NULL && i < pos) {
         temp = temp->next;
         i++;
     }
-    if (i < pos) {
-        printf("List is too small for specified position (Current Size: %d)", i);
+    if (i <= pos && temp == NULL) {
+        printf("List is too small for specified position (Current Size: %d)\n", i);
         return NULL;
     }
     return temp;
