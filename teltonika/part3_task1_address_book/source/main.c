@@ -1,42 +1,62 @@
+#include <signal.h>
 #include "llist.h"
 #include "task_util.h"
+#include "main_helper.h"
 
-void load_file(FILE *file, struct Person **list);
-void print_possible();
-int ask_num();
-void do_task(struct Person **list, int task);
+static int running = 1;
+static void sig_handler(int signum)
+{
+    printf("\nCTRL+C. Exiting\n");
+    running = 0;
+}
 
 int main(void)
 {
+    struct sigaction sa;
+    sa.sa_handler = sig_handler;
+    sigaction(SIGINT, &sa, NULL);
+    
     char *file_name = "/addresses.csv";
-    char *file_path = malloc(strlen(getenv("HOME")) + strlen(file_name) + 1);
+    char file_path[200];
     strcpy(file_path, getenv("HOME"));
     strcat(file_path, file_name);
     
     struct Person *list = NULL;
-    FILE *file = NULL;
+    file_open(file_path, list);
 
-    file = fopen(file_path, "r");
-    if (file == NULL) {
-        printf("Unable to open file\n");
-    } else {
-        load_file(file, &list);
-        printf("Initial List: \n");
-        llist_print(list);
-        fclose(file);
-    }
-
-    int task = 0;
-    while (task != 1) {
+    while (running)
+    {
         print_possible();
-        task = ask_num();
-        if (task > 8 || task < 1) {
-            printf("Task does not exist!\n");
-            continue;
+        switch (ask_num()) {
+            case 1:
+                running = 0;
+                break;
+            case 2:
+                task_print(list);
+                break;
+            case 3:
+                task_add_end(&list);
+                break;
+            case 4:
+                task_add_at(&list);
+                break;
+            case 5:
+                task_remove_at(list);
+                break;
+            case 6:
+                task_remove_all(list);
+                break;
+            case 7:
+                task_find_at(list);
+                break;
+            case 8:
+                task_find_by(list);
+                break;
+            default:
+                printf("Task does not exist!\n");
+                break;
         }
-        do_task(&list, task);
     }
     llist_remove_all(&list);
-    free(file_path);
     return 0;
 }

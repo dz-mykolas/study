@@ -1,5 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "llist.h"
 #include "task_util.h"
+
+void file_open(char *file_path, struct Person *list)
+{
+    FILE *file = NULL;
+
+    file = fopen(file_path, "r");
+    if (file == NULL) {
+        printf("Unable to open file\n");
+    } else {
+        load_file(file, &list);
+        printf("Initial List: \n");
+        llist_print(list);
+        fclose(file);
+    }
+}
 
 void load_file(FILE *file, struct Person **list)
 {
@@ -74,9 +92,8 @@ char *ask_input()
     }
 }
 
-char *ask_address_input()
+void ask_address_input(char *line)
 {
-    char *line = malloc(sizeof(char) * 128);
     char *name;
     char *surname;
     char *email;
@@ -96,63 +113,4 @@ char *ask_address_input()
     free(surname);
     free(email);
     free(phone);
-    return line;
-}
-
-void do_task(struct Person **list, int task)
-{
-    char *input = NULL;
-    struct Person *new = NULL;
-    int pos = 0;
-    switch (task) {
-        case 2:
-                printf("Current list:\n");
-                llist_print(*list);
-                break;
-        case 3:
-                input = ask_address_input();
-                printf("New address: %s\n", input);
-                new = create_address_node(input);
-                llist_add_end(list, new);
-                free(input);
-                break;
-        case 4:
-                input = ask_address_input();
-                printf("New address: %s\n", input);
-                printf("Input address position: ");
-                pos = ask_num();
-                new = create_address_node(input);
-                if (llist_add_at(list, new, pos) == 1) {
-                    free(new);
-                }
-                free(input);
-                break;
-        case 5:
-                printf("Input address position: ");
-                pos = ask_num();
-                llist_remove_at(list, pos);
-                break;
-        case 6:
-                printf("Removed all!\n");
-                llist_remove_all(list);
-                break;
-        case 7:
-                printf("Input address position: ");
-                pos = ask_num();
-                if (pos < 0)
-                    printf("Position can not be less than 0\n");
-                else if ((new = llist_find_at(*list, pos)) != NULL)
-                    person_print(new);
-                break;
-        case 8:
-                printf("Input exact name/surname/email/phone: ");
-                input = ask_input();
-                new = llist_find_by(*list, input);
-                if (new != NULL)
-                    person_print(new);
-                else 
-                    printf("Address not found!\n");
-                free(input);
-                break;
-    }
 }
