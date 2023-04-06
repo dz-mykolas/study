@@ -1,2 +1,0 @@
-gcc -o main main.c llist.c task_util.c
-valgrind --leak-check=full ./main
